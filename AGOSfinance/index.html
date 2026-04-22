@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AGOSfinance — Analisi & Mercati</title>
+  <meta name="description" content="Analisi indipendenti su azioni e opzioni. Contenuti per investitori consapevoli."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@500;700&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── RESET & TOKENS ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold:      #C9A84C;
+      --gold-lt:   #E8C96A;
+      --gold-dk:   #9A7530;
+      --gold-pale: #FDF6E3;
+      --black:     #0D0D0D;
+      --ink:       #141414;
+      --paper:     #F7F5F0;
+      --smoke:     #EDEBE5;
+      --mist:      #D4D0C4;
+      --slate:     #8A8678;
+      --fd: 'DM Serif Display', serif;
+      --fb: 'Barlow', sans-serif;
+      --fc: 'Barlow Condensed', sans-serif;
+    }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body { background: var(--black); color: var(--paper); font-family: var(--fb); font-weight: 300; overflow-x: hidden; line-height: 1.6; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dk); border-radius: 2px; }
+
+    /* ── CURSOR DOT ── */
+    body { cursor: none; }
+    #cursor { position: fixed; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .15s, height .15s, background .15s; }
+    #cursor.hover { width: 24px; height: 24px; background: transparent; border: 1.5px solid var(--gold); }
+
+    /* ── LOGO SVG ── */
+    .logo-svg { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-bar { width: 6px; height: 32px; background: var(--gold); border-radius: 1px; flex-shrink: 0; }
+    .logo-text { font-family: var(--fc); font-weight: 700; font-size: 1.15rem; letter-spacing: 0.04em; color: var(--paper); line-height: 1; }
+    .logo-text em { font-style: normal; color: var(--gold); }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 5vw; height: 64px;
+      background: rgba(13,13,13,0.85); backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(201,168,76,0.12);
+      transition: background .3s;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-family: var(--fc); font-weight: 500; font-size: 0.8rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--mist); text-decoration: none; transition: color .2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -3px; left: 0; width: 0; height: 1px;
+      background: var(--gold); transition: width .25s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a.active { color: var(--gold); }
+    .nav-links a.active::after { width: 100%; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh; display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding-top: 64px; overflow: hidden; position: relative;
+    }
+    /* Grain overlay */
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 1;
+    }
+
+    .hero-left {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 5rem 4rem 5rem 5vw; position: relative; z-index: 2;
+      animation: heroIn .9s cubic-bezier(.16,1,.3,1) both;
+    }
+    .hero-eyebrow {
+      display: flex; align-items: center; gap: .75rem;
+      font-family: var(--fc); font-size: .72rem; font-weight: 500;
+      letter-spacing: .16em; text-transform: uppercase; color: var(--gold);
+      margin-bottom: 2rem;
+    }
+    .hero-eyebrow::before { content: ''; width: 2.5rem; height: 1px; background: var(--gold); }
+    .hero h1 {
+      font-family: var(--fd); font-size: clamp(3rem, 5.5vw, 5.2rem);
+      font-weight: 400; line-height: 1.06; letter-spacing: -.02em;
+      margin-bottom: 1.75rem; color: var(--paper);
+    }
+    .hero h1 .line-gold { color: var(--gold); font-style: italic; }
+    .hero-sub {
+      font-size: 1rem; color: var(--slate); line-height: 1.8;
+      max-width: 420px; margin-bottom: 3rem;
+    }
+    .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-family: var(--fc); font-size: .8rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase; text-decoration: none;
+      padding: .85rem 2rem; border-radius: 2px;
+      transition: all .2s; cursor: none;
+    }
+    .btn-gold { background: var(--gold); color: var(--black); }
+    .btn-gold:hover { background: var(--gold-lt); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,.25); }
+    .btn-outline { background: transparent; color: var(--paper); border: 1px solid rgba(255,255,255,.2); }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+
+    /* Live ticker strip */
+    .hero-ticker {
+      position: absolute; bottom: 2.5rem; left: 5vw; right: 0;
+      display: flex; gap: 3rem; overflow: hidden; z-index: 2;
+    }
+    .ticker-item { display: flex; align-items: center; gap: .5rem; flex-shrink: 0; }
+    .ticker-sym { font-family: var(--fc); font-size: .78rem; font-weight: 700; letter-spacing: .08em; color: var(--paper); }
+    .ticker-val { font-size: .78rem; color: var(--slate); }
+    .ticker-chg { font-size: .72rem; font-weight: 500; padding: .15rem .45rem; border-radius: 2px; }
+    .up { background: rgba(74,222,128,.12); color: #4ade80; }
+    .dn { background: rgba(248,113,113,.12); color: #f87171; }
+
+    /* HERO RIGHT */
+    .hero-right {
+      background: var(--ink); position: relative; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 5rem 5vw 5rem 4rem; z-index: 2;
+      animation: heroIn .9s cubic-bezier(.16,1,.3,1) .2s both;
+    }
+    /* Decorative vertical bar — logo motif */
+    .hero-right::before {
+      content: ''; position: absolute;
+      top: 15%; left: 0; width: 4px; height: 40%;
+      background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    }
+    .cards-label {
+      font-family: var(--fc); font-size: .7rem; font-weight: 500;
+      letter-spacing: .14em; text-transform: uppercase; color: var(--gold);
+      margin-bottom: 1.5rem;
+    }
+    .stat-cards { display: grid; grid-template-columns: 1fr 1fr; gap: .875rem; margin-bottom: 2.5rem; }
+    .stat-card {
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+      border-radius: 4px; padding: 1.4rem 1.25rem;
+      transition: border-color .2s, transform .2s;
+    }
+    .stat-card:hover { border-color: rgba(201,168,76,.3); transform: translateY(-2px); }
+    .stat-card-label { font-family: var(--fc); font-size: .65rem; letter-spacing: .12em; text-transform: uppercase; color: var(--slate); margin-bottom: .5rem; }
+    .stat-card-val { font-family: var(--fd); font-size: 2rem; color: var(--paper); line-height: 1; }
+    .stat-card-sub { font-size: .72rem; color: var(--slate); margin-top: .35rem; }
+
+    .quote-block {
+      border-left: 2px solid var(--gold); padding-left: 1.5rem;
+    }
+    .quote-block p { font-family: var(--fd); font-size: 1.1rem; font-style: italic; color: var(--mist); line-height: 1.6; }
+    .quote-block cite { display: block; font-size: .75rem; color: var(--gold); margin-top: .6rem; font-style: normal; font-family: var(--fc); letter-spacing: .08em; }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      background: var(--gold); overflow: hidden; height: 40px;
+      display: flex; align-items: center; position: relative;
+    }
+    .marquee-track {
+      display: flex; gap: 4rem; animation: marquee 30s linear infinite; white-space: nowrap;
+    }
+    .marquee-track span {
+      font-family: var(--fc); font-size: .72rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--black);
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .marquee-track span::before { content: '◆'; font-size: .5rem; }
+
+    /* ── ABOUT STRIP ── */
+    .about {
+      display: grid; grid-template-columns: 5fr 4fr;
+      background: var(--paper); color: var(--black);
+    }
+    .about-left { padding: 6rem 4rem 6rem 5vw; }
+    .section-eyebrow {
+      font-family: var(--fc); font-size: .7rem; font-weight: 600;
+      letter-spacing: .16em; text-transform: uppercase; color: var(--gold-dk);
+      margin-bottom: 1.25rem; display: flex; align-items: center; gap: .75rem;
+    }
+    .section-eyebrow::before { content: ''; width: 2rem; height: 1px; background: var(--gold-dk); }
+    .about-left h2 {
+      font-family: var(--fd); font-size: clamp(2.2rem, 4vw, 3.4rem);
+      font-weight: 400; line-height: 1.1; letter-spacing: -.02em;
+      margin-bottom: 1.75rem; color: var(--ink);
+    }
+    .about-left h2 em { font-style: italic; color: var(--gold-dk); }
+    .about-left p { font-size: .95rem; color: #4a4840; line-height: 1.85; max-width: 500px; margin-bottom: 1rem; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.75rem; }
+    .tag {
+      font-family: var(--fc); font-size: .72rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: .38rem 1rem; border: 1px solid #C5C0B0; border-radius: 100px;
+      color: #4a4840; transition: all .2s;
+    }
+    .tag:hover { background: var(--gold-dk); color: var(--paper); border-color: var(--gold-dk); }
+
+    .about-right {
+      background: var(--ink); color: var(--paper);
+      padding: 6rem 5vw 6rem 4rem;
+      display: flex; flex-direction: column; justify-content: center; gap: 2rem;
+      position: relative;
+    }
+    .about-right::before {
+      content: ''; position: absolute;
+      top: 10%; left: 0; width: 4px; height: 35%;
+      background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    }
+    .method-step { padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,.07); }
+    .step-num { font-family: var(--fc); font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: .5rem; }
+    .step-title { font-family: var(--fd); font-size: 1.15rem; color: var(--paper); margin-bottom: .4rem; }
+    .step-desc { font-size: .85rem; color: var(--slate); line-height: 1.7; }
+
+    /* ── RECENT ANALYSES ── */
+    .analyses { background: var(--black); padding: 6rem 5vw; }
+    .section-header {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 3rem; padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .section-header h2 {
+      font-family: var(--fd); font-size: clamp(2rem, 3.5vw, 2.8rem);
+      font-weight: 400; letter-spacing: -.02em; color: var(--paper);
+    }
+    .section-header h2 em { font-style: italic; color: var(--gold); }
+    .link-arrow {
+      font-family: var(--fc); font-size: .72rem; font-weight: 600;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--gold); text-decoration: none;
+      display: flex; align-items: center; gap: .5rem;
+      transition: gap .2s;
+    }
+    .link-arrow:hover { gap: .85rem; }
+
+    .analyses-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.06); }
+    .a-card {
+      background: var(--black); padding: 2rem; text-decoration: none; color: inherit;
+      display: flex; flex-direction: column; gap: .75rem;
+      transition: background .25s; position: relative; overflow: hidden;
+    }
+    .a-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px;
+      background: var(--gold); transition: width .3s;
+    }
+    .a-card:hover { background: rgba(201,168,76,.04); }
+    .a-card:hover::after { width: 100%; }
+    .a-card-cat { font-family: var(--fc); font-size: .65rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
+    .a-card-ticker { font-family: var(--fd); font-size: 2.5rem; color: var(--paper); line-height: 1; }
+    .a-card-title { font-size: .9rem; font-weight: 400; color: var(--mist); line-height: 1.5; flex: 1; }
+    .a-card-date { font-size: .72rem; color: var(--slate); }
+    .a-card-arrow { font-size: .8rem; color: var(--gold); font-weight: 600; align-self: flex-end; transition: transform .2s; }
+    .a-card:hover .a-card-arrow { transform: translateX(4px); }
+
+    /* ── PORTFOLIO TEASER ── */
+    .portfolio-teaser {
+      background: var(--ink); padding: 5rem 5vw;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+      border-top: 1px solid rgba(255,255,255,.05);
+    }
+    .portfolio-teaser h2 { font-family: var(--fd); font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 400; line-height: 1.1; letter-spacing: -.02em; color: var(--paper); margin-bottom: 1rem; }
+    .portfolio-teaser h2 em { color: var(--gold); font-style: italic; }
+    .portfolio-teaser p { font-size: .92rem; color: var(--slate); line-height: 1.8; margin-bottom: 2rem; }
+    .pos-preview { display: flex; flex-direction: column; gap: .5rem; }
+    .pos-row {
+      display: grid; grid-template-columns: auto 1fr auto auto;
+      align-items: center; gap: 1rem; padding: .9rem 1.25rem;
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 3px;
+      transition: border-color .2s;
+    }
+    .pos-row:hover { border-color: rgba(201,168,76,.25); }
+    .pos-sym { font-family: var(--fc); font-weight: 700; font-size: .9rem; color: var(--paper); width: 60px; }
+    .pos-name { font-size: .78rem; color: var(--slate); }
+    .pos-type { font-family: var(--fc); font-size: .65rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; padding: .2rem .6rem; border-radius: 100px; }
+    .type-long { background: rgba(74,222,128,.1); color: #4ade80; }
+    .type-call { background: rgba(201,168,76,.12); color: var(--gold); }
+    .type-put { background: rgba(248,113,113,.1); color: #f87171; }
+    .pos-chg { font-size: .82rem; font-weight: 500; }
+    .pos-chg.up { color: #4ade80; }
+    .pos-chg.dn { color: #f87171; }
+
+    /* ── DISCLAIMER ── */
+    .disclaimer {
+      background: var(--gold-pale); border-top: 3px solid var(--gold-dk);
+      padding: 2rem 5vw; display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .disclaimer svg { flex-shrink: 0; margin-top: 2px; }
+    .disclaimer p { font-size: .8rem; color: #5c4a00; line-height: 1.75; }
+    .disclaimer strong { font-weight: 600; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--black); border-top: 1px solid rgba(255,255,255,.06);
+      padding: 3rem 5vw 1.5rem;
+      display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 3rem;
+    }
+    .footer-brand p { font-size: .8rem; color: var(--slate); margin-top: .85rem; line-height: 1.7; max-width: 240px; }
+    .footer-col h4 { font-family: var(--fc); font-size: .68rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.25rem; }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: .65rem; }
+    .footer-col a { font-size: .82rem; color: var(--slate); text-decoration: none; transition: color .2s; }
+    .footer-col a:hover { color: var(--gold); }
+    .footer-bottom {
+      background: var(--black); border-top: 1px solid rgba(255,255,255,.05);
+      padding: 1.25rem 5vw; display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-bottom p { font-size: .72rem; color: rgba(255,255,255,.25); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes heroIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      body { cursor: auto; }
+      #cursor { display: none; }
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-left { padding: 4rem 5vw 2rem; }
+      .hero-right { padding: 2rem 5vw 5rem; }
+      .hero-ticker { display: none; }
+      .about { grid-template-columns: 1fr; }
+      .about-left, .about-right { padding: 4rem 5vw; }
+      .analyses-grid { grid-template-columns: 1fr; }
+      .portfolio-teaser { grid-template-columns: 1fr; }
+      footer { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .stat-cards { grid-template-columns: 1fr; }
+      footer { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; gap: .4rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="index.html" class="logo-svg">
+    <span class="logo-bar"></span>
+    <span class="logo-text">AGOS<em>finance</em></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="analisi.html">Analisi</a></li>
+    <li><a href="portfolio.html">Portfolio</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-left">
+    <span class="hero-eyebrow">Analisi Indipendente</span>
+    <h1>
+      Investi con<br/>
+      <span class="line-gold">metodo,</span><br/>
+      non con l'umore.
+    </h1>
+    <p class="hero-sub">
+      Analisi approfondite su azioni e opzioni. Nessun hype, nessun conflitto di interesse.
+      Solo ragionamento rigoroso per chi vuole capire prima di agire.
+    </p>
+    <div class="hero-ctas">
+      <a href="analisi.html" class="btn btn-gold">Leggi le analisi →</a>
+      <a href="portfolio.html" class="btn btn-outline">Portfolio aperto</a>
+    </div>
+
+    <div class="hero-ticker">
+      <div class="ticker-item">
+        <span class="ticker-sym">SPY</span>
+        <span class="ticker-val">$524.10</span>
+        <span class="ticker-chg up">+0.8%</span>
+      </div>
+      <div class="ticker-item">
+        <span class="ticker-sym">NVDA</span>
+        <span class="ticker-val">$875.40</span>
+        <span class="ticker-chg up">+3.1%</span>
+      </div>
+      <div class="ticker-item">
+        <span class="ticker-sym">AAPL</span>
+        <span class="ticker-val">$182.30</span>
+        <span class="ticker-chg dn">−0.4%</span>
+      </div>
+      <div class="ticker-item">
+        <span class="ticker-sym">VIX</span>
+        <span class="ticker-val">14.20</span>
+        <span class="ticker-chg dn">−2.1%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <p class="cards-label">Snapshot mercati</p>
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="stat-card-label">Analisi pubblicate</div>
+        <div class="stat-card-val">18</div>
+        <div class="stat-card-sub">Azioni & Opzioni</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Trade chiusi 2025</div>
+        <div class="stat-card-val">11</div>
+        <div class="stat-card-sub">Win rate: 72%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Posizioni aperte</div>
+        <div class="stat-card-val">4</div>
+        <div class="stat-card-sub">Aggiornato oggi</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Categorie</div>
+        <div class="stat-card-val">3</div>
+        <div class="stat-card-sub">Azioni · Opzioni · Macro</div>
+      </div>
+    </div>
+    <div class="quote-block">
+      <p>"Il rischio viene dal non sapere cosa stai facendo."</p>
+      <cite>— Warren Buffett</cite>
+    </div>
+  </div>
+</section>
+
+<!-- ── MARQUEE ── -->
+<div class="marquee-wrap" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Azioni</span><span>Opzioni</span><span>Analisi Fondamentale</span>
+    <span>Macro Economia</span><span>Risk Management</span><span>Value Investing</span>
+    <span>Options Flow</span><span>Earnings Season</span><span>AGOSfinance</span>
+    <span>Azioni</span><span>Opzioni</span><span>Analisi Fondamentale</span>
+    <span>Macro Economia</span><span>Risk Management</span><span>Value Investing</span>
+    <span>Options Flow</span><span>Earnings Season</span><span>AGOSfinance</span>
+  </div>
+</div>
+
+<!-- ── ABOUT ── -->
+<section class="about" id="about">
+  <div class="about-left">
+    <span class="section-eyebrow">Chi sono</span>
+    <h2>Investitore<br/>autonomo.<br/><em>Non un consulente.</em></h2>
+    <p>
+      AGOSfinance è un progetto indipendente dedicato all'analisi dei mercati azionari
+      e del mondo delle opzioni. Condivido la mia tesi di investimento — completa di
+      rischi, incertezze e ragionamento — senza filtri e senza secondi fini.
+    </p>
+    <p>
+      Non gestisco i tuoi soldi. Non ho sponsor. Non vendo corsi.
+      Pubblico analisi perché il confronto migliora il processo.
+    </p>
+    <div class="tag-row">
+      <span class="tag">Analisi fondamentale</span>
+      <span class="tag">Opzioni</span>
+      <span class="tag">Stock picking</span>
+      <span class="tag">Macro</span>
+      <span class="tag">Options greeks</span>
+      <span class="tag">Risk/reward</span>
+    </div>
+  </div>
+  <div class="about-right">
+    <div class="method-step">
+      <div class="step-num">01 — Ricerca</div>
+      <div class="step-title">Prima i dati, poi la tesi</div>
+      <p class="step-desc">Bilanci, earnings calls, 10-K. La narrativa viene dopo i numeri, non prima.</p>
+    </div>
+    <div class="method-step">
+      <div class="step-num">02 — Struttura</div>
+      <div class="step-title">Definisco il trade</div>
+      <p class="step-desc">Ingresso, target, stop loss, dimensionamento. Tutto per scritto prima di agire.</p>
+    </div>
+    <div class="method-step">
+      <div class="step-num">03 — Trasparenza</div>
+      <div class="step-title">Pubblico tesi e risultati</div>
+      <p class="step-desc">Condivido sia i successi che gli errori. Il track record completo è in Portfolio.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── RECENT ANALYSES ── -->
+<section class="analyses">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow" style="color:var(--gold); margin-bottom:.75rem;">Ultime pubblicazioni</div>
+      <h2>Analisi <em>recenti</em></h2>
+    </div>
+    <a href="analisi.html" class="link-arrow">Tutte le analisi →</a>
+  </div>
+
+  <div class="analyses-grid">
+    <a href="analisi/prima-analisi.html" class="a-card">
+      <span class="a-card-cat">Azione · Tech</span>
+      <div class="a-card-ticker">NVDA</div>
+      <p class="a-card-title">NVIDIA: i rischi ignorati dal mercato nel ciclo AI</p>
+      <span class="a-card-date">Aprile 2025</span>
+      <span class="a-card-arrow">→</span>
+    </a>
+    <a href="analisi.html" class="a-card">
+      <span class="a-card-cat">Opzioni · Income</span>
+      <div class="a-card-ticker">SPY</div>
+      <p class="a-card-title">Covered call su SPY: gestione delle posizioni in bassa volatilità</p>
+      <span class="a-card-date">Marzo 2025</span>
+      <span class="a-card-arrow">→</span>
+    </a>
+    <a href="analisi.html" class="a-card">
+      <span class="a-card-cat">Macro · Tassi</span>
+      <div class="a-card-ticker">FED</div>
+      <p class="a-card-title">Cosa implica un ciclo di tagli lenti per il portafoglio azionario</p>
+      <span class="a-card-date">Febbraio 2025</span>
+      <span class="a-card-arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<!-- ── PORTFOLIO TEASER ── -->
+<section class="portfolio-teaser">
+  <div>
+    <div class="section-eyebrow" style="color:var(--gold); margin-bottom:1rem;">Portfolio aperto</div>
+    <h2>Posizioni<br/><em>in corso.</em></h2>
+    <p>
+      Tutte le mie posizioni attualmente aperte, con entry price, strategia
+      e variazione. Lo storico delle posizioni chiuse è disponibile nella pagina Portfolio.
+    </p>
+    <a href="portfolio.html" class="btn btn-gold">Vedi il portfolio completo →</a>
+  </div>
+  <div class="pos-preview">
+    <div class="pos-row">
+      <span class="pos-sym">NVDA</span>
+      <span class="pos-name">NVIDIA Corp.</span>
+      <span class="pos-type type-long">Long</span>
+      <span class="pos-chg up">+12.4%</span>
+    </div>
+    <div class="pos-row">
+      <span class="pos-sym">AAPL</span>
+      <span class="pos-name">Apple — Call 195</span>
+      <span class="pos-type type-call">Call</span>
+      <span class="pos-chg up">+34.2%</span>
+    </div>
+    <div class="pos-row">
+      <span class="pos-sym">SPY</span>
+      <span class="pos-name">S&P500 — Put 500</span>
+      <span class="pos-type type-put">Put</span>
+      <span class="pos-chg dn">−8.1%</span>
+    </div>
+    <div class="pos-row">
+      <span class="pos-sym">MSFT</span>
+      <span class="pos-name">Microsoft Corp.</span>
+      <span class="pos-type type-long">Long</span>
+      <span class="pos-chg up">+5.7%</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── DISCLAIMER ── -->
+<div class="disclaimer">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9A7530" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+  <p>
+    <strong>Disclaimer legale:</strong> Le informazioni presenti su questo sito hanno esclusivamente scopo informativo ed educativo.
+    Non costituiscono consulenza finanziaria, raccomandazione di investimento o sollecitazione all'acquisto/vendita di strumenti finanziari.
+    Ogni decisione di investimento è responsabilità esclusiva del lettore. Investire comporta rischi, inclusa la possibile perdita del capitale investito.
+  </p>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-brand">
+    <a href="index.html" class="logo-svg">
+      <span class="logo-bar" style="height:24px"></span>
+      <span class="logo-text" style="font-size:1rem;">AGOS<em>finance</em></span>
+    </a>
+    <p>Analisi indipendenti su azioni e opzioni. Nessun conflitto di interesse.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Navigazione</h4>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="analisi.html">Analisi</a></li>
+      <li><a href="portfolio.html">Portfolio</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Categorie</h4>
+    <ul>
+      <li><a href="analisi.html">Azioni</a></li>
+      <li><a href="analisi.html">Opzioni</a></li>
+      <li><a href="analisi.html">Macro</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Legale</h4>
+    <ul>
+      <li><a href="#">Disclaimer</a></li>
+      <li><a href="#">Privacy</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <p>© 2025 AGOSfinance. Tutti i diritti riservati.</p>
+  <p>Le informazioni non costituiscono consulenza finanziaria.</p>
+</div>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top  = e.clientY + 'px';
+  });
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+  });
+
+  // Nav scroll effect
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    nav.style.background = window.scrollY > 60
+      ? 'rgba(13,13,13,0.97)'
+      : 'rgba(13,13,13,0.85)';
+  });
+</script>
+</body>
+</html>
