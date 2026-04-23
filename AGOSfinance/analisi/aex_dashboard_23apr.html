@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEX PRO — 23 APR 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080C10;
+  --bg2: #0D1318;
+  --bg3: #111820;
+  --border: #1E2D3D;
+  --border2: #243545;
+  --text: #C8D8E8;
+  --text-dim: #5A7A9A;
+  --text-muted: #2E4560;
+  --green: #00E5A0;
+  --green-dim: #00A070;
+  --green-bg: rgba(0,229,160,0.07);
+  --red: #FF4D6A;
+  --red-dim: #C03050;
+  --red-bg: rgba(255,77,106,0.07);
+  --amber: #FFAA00;
+  --amber-bg: rgba(255,170,0,0.07);
+  --blue: #3FA8FF;
+  --blue-bg: rgba(63,168,255,0.08);
+  --purple: #A855F7;
+  --purple-bg: rgba(168,85,247,0.08);
+  --accent: #00E5A0;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* SCAN LINE OVERLAY */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  animation: fadeIn 0.6s ease;
+}
+
+.header-left {}
+.terminal-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.header-title {
+  font-family: var(--sans);
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -.02em;
+}
+.header-title span { color: var(--accent); }
+
+.header-right { text-align: right; }
+.live-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  margin-right: 6px;
+  animation: pulse 1.5s infinite;
+}
+.timestamp { font-size: 11px; color: var(--text-dim); }
+
+@keyframes pulse {
+  0%,100% { opacity:1; }
+  50% { opacity: 0.3; }
+}
+@keyframes fadeIn {
+  from { opacity:0; transform: translateY(-6px); }
+  to { opacity:1; transform: translateY(0); }
+}
+@keyframes slideUp {
+  from { opacity:0; transform: translateY(12px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+/* TOP KPI ROW */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+  animation: slideUp 0.5s ease 0.1s both;
+}
+
+.kpi {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.kpi:hover { border-color: var(--border2); }
+.kpi::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.kpi.green::before { background: var(--green); }
+.kpi.red::before { background: var(--red); }
+.kpi.amber::before { background: var(--amber); }
+.kpi.blue::before { background: var(--blue); }
+.kpi.purple::before { background: var(--purple); }
+
+.kpi-label { font-size: 9px; color: var(--text-dim); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 5px; }
+.kpi-val { font-size: 20px; font-weight: 600; font-family: var(--sans); letter-spacing: -.02em; line-height:1; margin-bottom: 3px; }
+.kpi-val.green { color: var(--green); }
+.kpi-val.red { color: var(--red); }
+.kpi-val.amber { color: var(--amber); }
+.kpi-val.blue { color: var(--blue); }
+.kpi-val.purple { color: var(--purple); }
+.kpi-sub { font-size: 10px; color: var(--text-dim); }
+
+/* ALERT CRITICO */
+.critical-alert {
+  background: rgba(168,85,247,0.1);
+  border: 1px solid rgba(168,85,247,0.4);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  animation: slideUp 0.5s ease 0.2s both;
+}
+.alert-icon {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.alert-body {}
+.alert-title {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--purple);
+  margin-bottom: 4px;
+  letter-spacing: .01em;
+}
+.alert-text {
+  font-size: 11px;
+  color: #A88FC8;
+  line-height: 1.65;
+}
+.alert-text strong { color: var(--purple); }
+
+/* HV vs IV BAR */
+.hv-compare {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  align-items: center;
+}
+.hv-item { flex: 1; }
+.hv-lbl { font-size: 9px; color: var(--text-dim); letter-spacing:.1em; text-transform:uppercase; margin-bottom:3px; display:flex; justify-content:space-between; }
+.hv-track { height: 5px; background: var(--border); border-radius: 3px; overflow:hidden; }
+.hv-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+.hv-fill.purple { background: var(--purple); }
+.hv-fill.red { background: var(--red); }
+.ratio-badge {
+  background: rgba(168,85,247,0.2);
+  border: 1px solid rgba(168,85,247,0.4);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: var(--purple);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* MAIN GRID */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+  animation: slideUp 0.5s ease 0.3s both;
+}
+
+.panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.panel-header {
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.panel-title {
+  font-size: 9px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+.panel-badge {
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-weight: 600;
+  letter-spacing: .06em;
+}
+.panel-badge.green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(0,229,160,0.25); }
+.panel-badge.amber { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(255,170,0,0.25); }
+.panel-badge.red { background: var(--red-bg); color: var(--red); border: 1px solid rgba(255,77,106,0.25); }
+.panel-badge.purple { background: var(--purple-bg); color: var(--purple); border: 1px solid rgba(168,85,247,0.25); }
+.panel-badge.blue { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(63,168,255,0.25); }
+
+.panel-body { padding: 12px 14px; }
+
+/* DATA ROWS */
+.drow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(30,45,61,0.5);
+}
+.drow:last-child { border-bottom: none; }
+.dl { color: var(--text-dim); font-size: 11px; }
+.dv { font-weight: 500; font-size: 11px; text-align: right; }
+.dv.green { color: var(--green); }
+.dv.red { color: var(--red); }
+.dv.amber { color: var(--amber); }
+.dv.blue { color: var(--blue); }
+.dv.white { color: #fff; }
+.dv.purple { color: var(--purple); }
+
+/* OI MINI CHART */
+.oi-chart { margin-top: 8px; }
+.oi-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+  font-size: 10px;
+}
+.oi-label { width: 42px; color: var(--text-dim); text-align: right; flex-shrink:0; }
+.oi-bar-wrap { flex: 1; height: 12px; background: var(--bg3); border-radius: 2px; overflow: hidden; position: relative; }
+.oi-bar { height: 100%; border-radius: 2px; }
+.oi-bar.put { background: var(--red-dim); }
+.oi-bar.call { background: var(--green-dim); }
+.oi-val { width: 48px; color: var(--text); font-weight: 500; flex-shrink:0; }
+.oi-section-label { font-size: 9px; letter-spacing:.1em; text-transform:uppercase; color: var(--text-muted); margin: 8px 0 4px; }
+
+/* PCR TIMELINE */
+.pcr-timeline {
+  display: flex;
+  gap: 0;
+  margin-top: 6px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.pcr-day {
+  flex: 1;
+  text-align: center;
+  padding: 7px 4px;
+  border-right: 1px solid var(--border);
+  transition: background 0.2s;
+}
+.pcr-day:last-child { border-right: none; }
+.pcr-day.today { background: var(--green-bg); }
+.pcr-date { font-size: 9px; color: var(--text-muted); margin-bottom: 3px; }
+.pcr-val { font-size: 13px; font-weight: 600; font-family: var(--sans); }
+.pcr-val.down { color: var(--green); }
+.pcr-val.same { color: var(--amber); }
+.pcr-delta { font-size: 9px; color: var(--text-dim); margin-top: 2px; }
+
+/* STRATEGIE */
+.strat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+  animation: slideUp 0.5s ease 0.4s both;
+}
+
+.strat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.strat-card.primary {
+  border-color: rgba(0,229,160,0.4);
+  box-shadow: 0 0 20px rgba(0,229,160,0.06);
+}
+.strat-card.secondary {
+  border-color: rgba(168,85,247,0.3);
+}
+
+.strat-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.strat-name {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+.strat-name.green { color: var(--green); }
+.strat-name.purple { color: var(--purple); }
+.strat-sub { font-size: 10px; color: var(--text-dim); margin-top: 1px; }
+
+.strat-body { padding: 12px 14px; }
+
+/* PAYOFF BAR */
+.payoff-section { margin: 10px 0; }
+.payoff-label { font-size: 9px; color: var(--text-dim); letter-spacing:.1em; text-transform:uppercase; margin-bottom:6px; }
+.payoff-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 4px; }
+.px {
+  border-radius: 4px;
+  padding: 6px 4px;
+  text-align: center;
+  border: 1px solid transparent;
+}
+.px-label { font-size: 9px; color: var(--text-dim); margin-bottom: 3px; }
+.px-val { font-size: 11px; font-weight: 600; }
+.px.loss { background: rgba(255,77,106,0.08); border-color: rgba(255,77,106,0.15); }
+.px.loss .px-val { color: var(--red); }
+.px.be { background: rgba(255,170,0,0.08); border-color: rgba(255,170,0,0.2); }
+.px.be .px-val { color: var(--amber); }
+.px.gain { background: rgba(0,229,160,0.07); border-color: rgba(0,229,160,0.15); }
+.px.gain .px-val { color: var(--green); }
+.px.max { background: rgba(0,229,160,0.15); border-color: rgba(0,229,160,0.35); }
+.px.max .px-val { color: #fff; }
+
+/* BUDGET TRACKER */
+.budget-bar {
+  margin: 10px 0 0;
+}
+.budget-lbl { font-size: 9px; color: var(--text-dim); letter-spacing:.1em; text-transform:uppercase; margin-bottom:5px; display:flex; justify-content:space-between; }
+.budget-track { height: 8px; background: var(--border); border-radius: 4px; overflow:hidden; }
+.budget-fill { height: 100%; border-radius: 4px; }
+
+/* VERDETTO */
+.verdetto {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  animation: slideUp 0.5s ease 0.5s both;
+  margin-bottom: 10px;
+}
+.verdetto-header {
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.verdetto-title {
+  font-size: 9px; letter-spacing:.15em; text-transform:uppercase; color: var(--text-dim);
+}
+.verdetto-body { padding: 14px 16px; }
+.verdetto-text {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  color: #8AAABB;
+  line-height: 1.75;
+}
+.verdetto-text strong { color: var(--text); }
+.verdetto-text .hl-green { color: var(--green); }
+.verdetto-text .hl-red { color: var(--red); }
+.verdetto-text .hl-amber { color: var(--amber); }
+.verdetto-text .hl-purple { color: var(--purple); }
+
+/* CATALYST ROW */
+.catalyst-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  animation: slideUp 0.5s ease 0.6s both;
+}
+.catalyst {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.cat-time { font-size: 10px; color: var(--text-dim); margin-bottom: 3px; }
+.cat-event { font-size: 11px; color: var(--text); font-family: var(--sans); font-weight: 500; margin-bottom: 4px; }
+.cat-imp {
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  display: inline-block;
+  font-weight: 600;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.cat-imp.high { background: var(--red-bg); color: var(--red); border: 1px solid rgba(255,77,106,0.3); }
+.cat-imp.med { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(255,170,0,0.3); }
+.cat-imp.low { background: var(--bg3); color: var(--text-dim); border: 1px solid var(--border); }
+
+/* FOOTER */
+.footer {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 10px;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+  animation: slideUp 0.5s ease 0.7s both;
+}
+
+/* CHANGE ARROWS */
+.arr-up::before { content: '▲ '; font-size: 8px; }
+.arr-dn::before { content: '▼ '; font-size: 8px; }
+.arr-ne::before { content: '— '; font-size: 8px; }
+
+/* SEPARATOR LABEL */
+.sep-label {
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 10px 0 6px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="terminal-label">AEX Options Terminal</div>
+      <div class="header-title">AEX<span>.</span>XAMS &nbsp;/&nbsp; Scad. 15 mag 2026</div>
+    </div>
+    <div class="header-right">
+      <div style="margin-bottom:4px"><span class="live-dot"></span><span style="font-size:10px;color:var(--green)">LIVE</span> &nbsp;<span class="timestamp">23 apr 2026 · 09:36 CEST</span></div>
+      <div style="font-size:10px;color:var(--text-dim)">22 giorni a scadenza · Budget: <span style="color:var(--amber)">€ 1.000</span></div>
+    </div>
+  </div>
+
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+    <div class="kpi red">
+      <div class="kpi-label">AEX Spot</div>
+      <div class="kpi-val red">1.013,20</div>
+      <div class="kpi-sub arr-dn" style="color:var(--red)">−8,06 / −0,79%</div>
+    </div>
+    <div class="kpi purple">
+      <div class="kpi-label">HV 10 giorni</div>
+      <div class="kpi-val purple">8,20%</div>
+      <div class="kpi-sub" style="color:var(--purple)">↑ da 6,94% ieri</div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">IV ATM (mag)</div>
+      <div class="kpi-val red">~16,6%</div>
+      <div class="kpi-sub" style="color:var(--text-dim)">IV/HV ratio: <span style="color:var(--red)">2,02×</span></div>
+    </div>
+    <div class="kpi amber">
+      <div class="kpi-label">Put/Call Ratio</div>
+      <div class="kpi-val amber">1,25</div>
+      <div class="kpi-sub arr-ne" style="color:var(--text-dim)">invariato da ieri</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-label">AEX vs ieri</div>
+      <div class="kpi-val red">−8,06</div>
+      <div class="kpi-sub arr-dn style="color:var(--red)">da 1.024,11 chiusura</div>
+    </div>
+  </div>
+
+  <!-- ALERT CRITICO -->
+  <div class="critical-alert">
+    <div class="alert-icon">⚡</div>
+    <div class="alert-body" style="flex:1">
+      <div class="alert-title">SEGNALE CRITICO — HV 8,20% vs IV 16,6% · Ratio 2,02× · AEX in ribasso −0,79%</div>
+      <div class="alert-text">
+        La HV è risalita leggermente da 6,94% a <strong>8,20%</strong> — il mercato ha iniziato a muoversi (-8 punti oggi), ma la divergenza con la IV implicita rimane enorme a <strong>2,02×</strong>. Le opzioni costano il <strong>doppio</strong> del movimento reale recente. Oggi AEX apre in rosso e testa il supporto chiave 1.010–1.015. Il trader professionista legge questa come un'opportunità direzionale ribassista <strong>purché usi spread</strong> per compensare la IV gonfiata.
+      </div>
+      <div class="hv-compare">
+        <div class="hv-item">
+          <div class="hv-lbl"><span>HV 10 — realizzata</span><span style="color:var(--purple);font-weight:600">8,20%</span></div>
+          <div class="hv-track"><div class="hv-fill purple" style="width:29%"></div></div>
+        </div>
+        <div class="hv-item">
+          <div class="hv-lbl"><span>IV ATM — implicita</span><span style="color:var(--red);font-weight:600">16,6%</span></div>
+          <div class="hv-track"><div class="hv-fill red" style="width:59%"></div></div>
+        </div>
+        <div class="ratio-badge">2,02×</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID: MERCATO + OI -->
+  <div class="main-grid">
+
+    <!-- PANEL: CONTESTO MERCATO -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Contesto di mercato & confronto sessioni</div>
+        <div class="panel-badge red">RIBASSISTA OGGI</div>
+      </div>
+      <div class="panel-body">
+        <div class="drow"><span class="dl">AEX oggi apertura</span><span class="dv">1.017,59</span></div>
+        <div class="drow"><span class="dl">AEX massimo giornaliero</span><span class="dv">1.017,77</span></div>
+        <div class="drow"><span class="dl">AEX minimo giornaliero</span><span class="dv red">1.012,71</span></div>
+        <div class="drow"><span class="dl">AEX chiusura ieri</span><span class="dv">1.024,11</span></div>
+        <div class="drow"><span class="dl">Gap apertura vs chiusura</span><span class="dv red">−6,52 pts (−0,64%)</span></div>
+        <div class="drow"><span class="dl">Supporto OI put vicino</span><span class="dv amber">1.000 (~1.115 OI)</span></div>
+        <div class="drow"><span class="dl">Resistenza OI call vicino</span><span class="dv green">1.025 → 1.050</span></div>
+        <div class="drow"><span class="dl">Linea rossa tecnica (chart)</span><span class="dv amber">~1.010–1.012</span></div>
+        <div class="drow"><span class="dl">HV ieri → oggi</span><span class="dv purple">6,94% → 8,20% ↑</span></div>
+        <div class="drow"><span class="dl">Struttura price action 3M</span><span class="dv">Rimbalzo da 945 ora storna</span></div>
+
+        <!-- PCR TIMELINE -->
+        <div style="margin-top:10px">
+          <div style="font-size:9px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px">PCR trend — 4 sessioni</div>
+          <div class="pcr-timeline">
+            <div class="pcr-day">
+              <div class="pcr-date">20 apr</div>
+              <div class="pcr-val same">1,31</div>
+              <div class="pcr-delta">—</div>
+            </div>
+            <div class="pcr-day">
+              <div class="pcr-date">21 apr</div>
+              <div class="pcr-val down">1,30</div>
+              <div class="pcr-delta" style="color:var(--green)">▼ −0,01</div>
+            </div>
+            <div class="pcr-day">
+              <div class="pcr-date">22 apr</div>
+              <div class="pcr-val down">1,25</div>
+              <div class="pcr-delta" style="color:var(--green)">▼ −0,05</div>
+            </div>
+            <div class="pcr-day today">
+              <div class="pcr-date">23 apr ←</div>
+              <div class="pcr-val same" style="color:var(--amber)">1,25</div>
+              <div class="pcr-delta" style="color:var(--amber)">— stabile</div>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:6px">PCR invariato ma AEX cede −8 punti: il rimbalzo di ieri era fragile. Il mercato non ha aggiunto put di paura → ribasso ordinato, non panico.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: OPEN INTEREST -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Open Interest — struttura scad. maggio</div>
+        <div class="panel-badge amber">PUT 15.649 · CALL 12.552</div>
+      </div>
+      <div class="panel-body">
+        <div class="drow"><span class="dl">Put totali</span><span class="dv red">15.649 (+807 da ieri)</span></div>
+        <div class="drow"><span class="dl">Call totali</span><span class="dv green">12.552 (+709 da ieri)</span></div>
+        <div class="drow"><span class="dl">PCR</span><span class="dv amber">1,25 — invariato</span></div>
+        <div class="drow"><span class="dl">Picco OI call #1</span><span class="dv green">1.050 → ~1.300</span></div>
+        <div class="drow"><span class="dl">Picco OI call #2</span><span class="dv green">1.080 → ~1.100</span></div>
+        <div class="drow"><span class="dl">Picco OI put vicino</span><span class="dv red">1.000 → ~1.115</span></div>
+        <div class="drow"><span class="dl">Picco OI put lontano</span><span class="dv red">920 → ~1.350</span></div>
+        <div class="drow"><span class="dl">Max pain stimato</span><span class="dv amber">1.010–1.020</span></div>
+
+        <div class="oi-chart">
+          <div class="oi-section-label">Put — picchi principali</div>
+          <div class="oi-row">
+            <div class="oi-label">1.000</div>
+            <div class="oi-bar-wrap"><div class="oi-bar put" style="width:85%"></div></div>
+            <div class="oi-val" style="color:var(--red)">~1.115</div>
+          </div>
+          <div class="oi-row">
+            <div class="oi-label">920</div>
+            <div class="oi-bar-wrap"><div class="oi-bar put" style="width:100%"></div></div>
+            <div class="oi-val" style="color:var(--red)">~1.350</div>
+          </div>
+          <div class="oi-row">
+            <div class="oi-label">950</div>
+            <div class="oi-bar-wrap"><div class="oi-bar put" style="width:100%"></div></div>
+            <div class="oi-val" style="color:var(--red)">~1.340</div>
+          </div>
+
+          <div class="oi-section-label">Call — picchi principali</div>
+          <div class="oi-row">
+            <div class="oi-label">1.050</div>
+            <div class="oi-bar-wrap"><div class="oi-bar call" style="width:100%"></div></div>
+            <div class="oi-val" style="color:var(--green)">~1.300</div>
+          </div>
+          <div class="oi-row">
+            <div class="oi-label">1.080</div>
+            <div class="oi-bar-wrap"><div class="oi-bar call" style="width:84%"></div></div>
+            <div class="oi-val" style="color:var(--green)">~1.100</div>
+          </div>
+          <div class="oi-row">
+            <div class="oi-label">1.025</div>
+            <div class="oi-bar-wrap"><div class="oi-bar call" style="width:42%"></div></div>
+            <div class="oi-val" style="color:var(--green)">~550</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STRATEGIE -->
+  <div class="sep-label">Operatività professionale — budget € 1.000 · contratto ×100</div>
+  <div class="strat-grid">
+
+    <!-- STRATEGIA PRIMARIA -->
+    <div class="strat-card primary">
+      <div class="strat-header">
+        <div>
+          <div class="strat-name green">Bear Put Spread</div>
+          <div class="strat-sub">Put 1.010 acquisto / Put 985 vendita — scad. maggio</div>
+        </div>
+        <div class="panel-badge green">PRIMARIA</div>
+      </div>
+      <div class="strat-body">
+        <div class="drow"><span class="dl">Put 1.010 — ask</span><span class="dv white">17,00 → costo €1.700</span></div>
+        <div class="drow"><span class="dl">Put 985 — bid venduta (est.)</span><span class="dv green">~9,00 → incasso €900</span></div>
+        <div class="drow"><span class="dl">Costo netto spread</span><span class="dv white"><strong>8,00 pts → €800</strong></span></div>
+        <div class="drow"><span class="dl">Profitto massimo</span><span class="dv green"><strong>25 − 8 = 17 pts = €1.700</strong></span></div>
+        <div class="drow"><span class="dl">Rendimento max</span><span class="dv green"><strong>+112,5%</strong></span></div>
+        <div class="drow"><span class="dl">Break-even</span><span class="dv amber">AEX ≤ 1.002 (−1,1%)</span></div>
+        <div class="drow"><span class="dl">Target max profit</span><span class="dv green">AEX ≤ 985 (−2,8%)</span></div>
+        <div class="drow"><span class="dl">ITM prob put 1.010</span><span class="dv white">50,33%</span></div>
+        <div class="drow"><span class="dl">Budget usato / residuo</span><span class="dv">€800 / <span class="green">€200 liberi</span></span></div>
+        <div class="drow"><span class="dl">Perdita massima</span><span class="dv red">−€800</span></div>
+        <div class="drow"><span class="dl">Perché questi strike</span><span class="dv amber">1.010 = linea rossa chart; 985 = OI put</span></div>
+
+        <div class="payoff-section">
+          <div class="payoff-label">P&L a scadenza</div>
+          <div class="payoff-grid">
+            <div class="px loss"><div class="px-label">≥ 1.010</div><div class="px-val">−€800</div></div>
+            <div class="px loss"><div class="px-label">1.005</div><div class="px-val">−€300</div></div>
+            <div class="px be"><div class="px-label">1.002</div><div class="px-val">± 0</div></div>
+            <div class="px gain"><div class="px-label">995</div><div class="px-val">+€900</div></div>
+            <div class="px max"><div class="px-label">≤ 985</div><div class="px-val">+€1.700</div></div>
+          </div>
+        </div>
+
+        <div class="budget-bar">
+          <div class="budget-lbl"><span>Capitale impegnato</span><span>€800 / €1.000</span></div>
+          <div class="budget-track"><div class="budget-fill" style="width:80%;background:var(--green)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STRATEGIA ALTERNATIVA -->
+    <div class="strat-card secondary">
+      <div class="strat-header">
+        <div>
+          <div class="strat-name purple">Long Straddle ATM</div>
+          <div class="strat-sub">Put 1.010 + Call 1.010 — mag · mini ×10</div>
+        </div>
+        <div class="panel-badge purple">ALTERNATIVA</div>
+      </div>
+      <div class="strat-body">
+        <div class="drow"><span class="dl">Logica</span><span class="dv purple">HV 8,2% · attesa vol explosion</span></div>
+        <div class="drow"><span class="dl">Put 1.010 ask</span><span class="dv white">17,00 → €170 mini</span></div>
+        <div class="drow"><span class="dl">Call 1.010 ask</span><span class="dv white">17,30 → €173 mini</span></div>
+        <div class="drow"><span class="dl">Costo totale 1 straddle mini</span><span class="dv white">€343</span></div>
+        <div class="drow"><span class="dl">Con €1.000 → mini</span><span class="dv purple"><strong>2 straddle mini = €686</strong></span></div>
+        <div class="drow"><span class="dl">Budget residuo</span><span class="dv green">€314 liberi</span></div>
+        <div class="drow"><span class="dl">Break-even rialzo</span><span class="dv green">AEX ≥ 1.027 (+1,4%)</span></div>
+        <div class="drow"><span class="dl">Break-even ribasso</span><span class="dv green">AEX ≤ 993 (−2,0%)</span></div>
+        <div class="drow"><span class="dl">Guadagna se</span><span class="dv">AEX si muove ±2% da 1.010</span></div>
+        <div class="drow"><span class="dl">Perde se</span><span class="dv red">AEX rimane 993–1.027 a scad.</span></div>
+        <div class="drow"><span class="dl">Vantaggio</span><span class="dv purple">Nessuna scommessa direzionale</span></div>
+        <div class="drow"><span class="dl">Svantaggio</span><span class="dv red">Theta alto, mini = meno leva</span></div>
+
+        <div class="payoff-section">
+          <div class="payoff-label">P&L a scadenza (2 mini straddle)</div>
+          <div class="payoff-grid">
+            <div class="px max"><div class="px-label">≤ 985</div><div class="px-val">+€340+</div></div>
+            <div class="px gain"><div class="px-label">993</div><div class="px-val">± 0</div></div>
+            <div class="px loss"><div class="px-label">1.010</div><div class="px-val">−€686</div></div>
+            <div class="px gain"><div class="px-label">1.027</div><div class="px-val">± 0</div></div>
+            <div class="px max"><div class="px-label">≥ 1.030</div><div class="px-val">+€300+</div></div>
+          </div>
+        </div>
+
+        <div style="background:var(--purple-bg);border:1px solid rgba(168,85,247,0.25);border-radius:5px;padding:8px 10px;margin-top:10px;font-size:10px;color:#A88FC8;line-height:1.6">
+          Quando HV è sotto 10% e IV è al 16%, storicamente la volatilità realizzata esplode entro 5–10 sessioni. Lo straddle cattura il movimento in qualsiasi direzione.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- VERDETTO -->
+  <div class="verdetto">
+    <div class="verdetto-header">
+      <div class="live-dot"></div>
+      <div class="verdetto-title">Verdetto — trader professionista · 23 apr 2026 ore 09:36</div>
+    </div>
+    <div class="verdetto-body">
+      <div class="verdetto-text">
+        Oggi il mercato cambia tono rispetto alle ultime due sessioni. AEX apre in <strong class="hl-red">ribasso di −8 punti (−0,79%)</strong> e testa la linea rossa tecnica che il grafico dei candlestick mostra chiaramente attorno a 1.010–1.012. La <span class="hl-purple">HV è risalita da 6,94% a 8,20%</span> — il mercato ha iniziato a muoversi, e il movimento di oggi è ribassista. Il PCR rimane invariato a 1,25: non c'è panico istituzionale, ma nessun accumulo rialzista nuovo.
+        <br><br>
+        Il cambio operativo rispetto a ieri è chiaro: <strong>ieri la view era rialzista</strong> (PCR in calo, AEX in salita, OI call su 1.050). <strong class="hl-red">Oggi la view è ribassista</strong>: AEX è sceso sotto 1.020 e testa il supporto, le candele mostrano un pattern di storno dopo il rimbalzo da 945, e la struttura tecnica punta verso 1.000 come zona magnetica (picco OI put = max pain area).
+        <br><br>
+        Con <strong>€1.000 di budget</strong> la struttura ottimale è il <strong class="hl-green">Bear Put Spread 1.010/985</strong>: compri la put 1.010 (ATM oggi, delta ~0,50) e vendi la put 985 per ridurre il costo netto della IV elevata. Il costo di €800 lascia €200 di buffer. Il break-even è a 1.002 — solo −1,1% dal corrente — e il max profit di €1.700 si realizza se AEX scende verso il supporto OI a 985, distante −2,8%. <strong>La leg lunga a 1.010 è esattamente sulla linea rossa tecnica del chart</strong> — il livello che se rotto apre lo spazio verso 1.000 e poi 985.
+        <br><br>
+        Lo <strong class="hl-purple">straddle su 2 mini</strong> rimane l'alternativa per chi non vuole scommettere sulla direzione: con break-even a ±2% copre sia un ulteriore ribasso che un rimbalzo improvviso. Costa €686 e lascia €314 liberi.
+      </div>
+    </div>
+  </div>
+
+  <!-- CATALYST -->
+  <div class="sep-label" style="margin-top:12px">Catalyst macro — finestra 23 apr → 15 mag</div>
+  <div class="catalyst-row">
+    <div class="catalyst">
+      <div class="cat-time">Oggi 10:00 CEST</div>
+      <div class="cat-event">PMI Flash Eurozona aprile (manifatturiero + servizi)</div>
+      <div class="cat-imp high">ALTO — trigger diretto AEX</div>
+    </div>
+    <div class="catalyst">
+      <div class="cat-time">29 apr</div>
+      <div class="cat-event">PCE USA + Housing Starts — 1 giorno prima scad. aprile</div>
+      <div class="cat-imp med">MEDIO</div>
+    </div>
+    <div class="catalyst">
+      <div class="cat-time">30 apr → 15 mag</div>
+      <div class="cat-event">PIL Q1 Germania/Francia + BCE meeting (possibile)</div>
+      <div class="cat-imp high">ALTO — dentro finestra maggio</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div>AEX Options Terminal · Dati da screenshot broker 23 apr 2026 · Scadenza: 15-mag-2026</div>
+    <div style="color:var(--red-dim)">⚠ Non è consulenza finanziaria · Rischio max = premio pagato</div>
+  </div>
+
+</div>
+</body>
+</html>
