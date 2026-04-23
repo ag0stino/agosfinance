@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Analisi — AGOSfinance</title>
+  <meta name="description" content="Tutte le analisi pubblicate su azioni e opzioni."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@500;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #C9A84C; --gold-lt: #E8C96A; --gold-dk: #9A7530; --gold-pale: #FDF6E3;
+      --black: #0D0D0D; --ink: #141414; --paper: #F7F5F0; --smoke: #EDEBE5;
+      --mist: #D4D0C4; --slate: #8A8678;
+      --fd: 'DM Serif Display', serif; --fb: 'Barlow', sans-serif; --fc: 'Barlow Condensed', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--black); color: var(--paper); font-family: var(--fb); font-weight: 300; overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dk); }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 500; display: flex; justify-content: space-between; align-items: center; padding: 0 5vw; height: 64px; background: rgba(13,13,13,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(201,168,76,0.12); }
+    .logo-svg { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-bar { width: 6px; height: 32px; background: var(--gold); border-radius: 1px; }
+    .logo-text { font-family: var(--fc); font-weight: 700; font-size: 1.15rem; letter-spacing: .04em; color: var(--paper); }
+    .logo-text em { font-style: normal; color: var(--gold); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a { font-family: var(--fc); font-size: .8rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--mist); text-decoration: none; transition: color .2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding: 9rem 5vw 5rem; position: relative; overflow: hidden;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .page-header::before {
+      content: 'ANALISI'; font-family: var(--fd); font-size: 18vw;
+      color: rgba(255,255,255,.025); position: absolute; right: -1vw; bottom: -2vw;
+      line-height: 1; pointer-events: none; white-space: nowrap;
+    }
+    /* Vertical bar motif */
+    .page-header::after {
+      content: ''; position: absolute; left: 2vw; top: 20%; bottom: 20%;
+      width: 3px; background: linear-gradient(to bottom, transparent, var(--gold) 50%, transparent);
+    }
+    .breadcrumb { font-family: var(--fc); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--slate); margin-bottom: 1.5rem; }
+    .breadcrumb a { color: var(--slate); text-decoration: none; transition: color .2s; }
+    .breadcrumb a:hover { color: var(--gold); }
+    .breadcrumb span { color: var(--gold); margin: 0 .5rem; }
+    .page-header h1 { font-family: var(--fd); font-size: clamp(3rem, 6vw, 5rem); font-weight: 400; line-height: 1.05; letter-spacing: -.02em; color: var(--paper); margin-bottom: 1rem; }
+    .page-header h1 em { font-style: italic; color: var(--gold); }
+    .page-header p { font-size: .95rem; color: var(--slate); max-width: 480px; line-height: 1.75; }
+
+    /* FILTERS */
+    .filters {
+      position: sticky; top: 64px; z-index: 100;
+      background: rgba(13,13,13,.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      padding: 1.1rem 5vw; display: flex; gap: .75rem; align-items: center; flex-wrap: wrap;
+    }
+    .filter-label { font-family: var(--fc); font-size: .65rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--slate); margin-right: .5rem; }
+    .f-btn {
+      font-family: var(--fc); font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+      padding: .38rem 1rem; border-radius: 2px; border: 1px solid rgba(255,255,255,.1);
+      background: transparent; color: var(--slate); cursor: pointer; transition: all .2s;
+    }
+    .f-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .f-btn.active { background: var(--gold); border-color: var(--gold); color: var(--black); }
+
+    /* MAIN CONTENT */
+    .content { padding: 3.5rem 5vw 6rem; }
+    .results-info { font-family: var(--fc); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--slate); margin-bottom: 2.5rem; }
+    .results-info strong { color: var(--gold); }
+
+    /* FEATURED */
+    .featured {
+      display: grid; grid-template-columns: 2fr 3fr;
+      border: 1px solid rgba(255,255,255,.08); border-radius: 3px;
+      overflow: hidden; margin-bottom: 1.5rem;
+      text-decoration: none; color: inherit;
+      transition: border-color .25s, transform .2s;
+    }
+    .featured:hover { border-color: rgba(201,168,76,.35); transform: translateY(-3px); }
+    .featured-left {
+      background: var(--ink); padding: 3rem;
+      display: flex; flex-direction: column; justify-content: space-between;
+      position: relative; overflow: hidden;
+    }
+    .featured-left::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 5px; height: 100%; background: var(--gold);
+    }
+    .feat-badge { display: inline-block; background: var(--gold); color: var(--black); font-family: var(--fc); font-size: .65rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: .3rem .75rem; border-radius: 1px; width: fit-content; margin-bottom: 2rem; }
+    .feat-ticker { font-family: var(--fd); font-size: 5rem; color: var(--paper); line-height: 1; margin-bottom: .25rem; }
+    .feat-cat { font-family: var(--fc); font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }
+    .featured-right { padding: 3rem; display: flex; flex-direction: column; justify-content: center; }
+    .featured-right h2 { font-family: var(--fd); font-size: clamp(1.4rem, 2.5vw, 2.2rem); font-weight: 400; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 1rem; color: var(--paper); }
+    .featured-right p { font-size: .88rem; color: var(--slate); line-height: 1.8; margin-bottom: 1.5rem; }
+    .feat-meta { display: flex; gap: 1.5rem; }
+    .meta-pill { font-family: var(--fc); font-size: .65rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--slate); display: flex; align-items: center; gap: .4rem; }
+
+    /* GRID */
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,.06); margin-bottom: 3rem; }
+    .card {
+      background: var(--black); padding: 2rem 1.75rem;
+      text-decoration: none; color: inherit; display: flex; flex-direction: column;
+      transition: background .2s; position: relative; overflow: hidden;
+    }
+    .card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 0; background: var(--gold); transition: height .3s; }
+    .card:hover { background: rgba(201,168,76,.04); }
+    .card:hover::before { height: 100%; }
+    .card-cat { font-family: var(--fc); font-size: .63rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: .75rem; }
+    .card-ticker { font-family: var(--fd); font-size: 2.8rem; color: var(--paper); line-height: 1; margin-bottom: .5rem; }
+    .card-title { font-size: .87rem; color: var(--mist); line-height: 1.55; flex: 1; margin-bottom: 1.25rem; }
+    .card-footer-row { display: flex; justify-content: space-between; align-items: center; }
+    .card-date { font-family: var(--fc); font-size: .63rem; letter-spacing: .08em; text-transform: uppercase; color: var(--slate); }
+    .card-arrow { color: var(--gold); font-size: .8rem; font-weight: 700; transition: transform .2s; }
+    .card:hover .card-arrow { transform: translateX(5px); }
+    .card.hidden { display: none; }
+
+    /* HOW TO ADD */
+    .how-to-add {
+      background: rgba(201,168,76,.06); border: 1px dashed rgba(201,168,76,.3);
+      border-radius: 3px; padding: 2rem 2.5rem;
+    }
+    .how-to-add h3 { font-family: var(--fd); font-size: 1.1rem; color: var(--gold); margin-bottom: .75rem; }
+    .how-to-add p { font-size: .85rem; color: var(--slate); line-height: 1.75; margin-bottom: .5rem; }
+    .how-to-add code { font-size: .8rem; background: rgba(255,255,255,.06); padding: .2rem .5rem; border-radius: 2px; color: var(--gold-lt); }
+
+    /* DISCLAIMER */
+    .disclaimer { background: var(--gold-pale); border-top: 3px solid var(--gold-dk); padding: 2rem 5vw; display: flex; gap: 1rem; }
+    .disclaimer p { font-size: .8rem; color: #5c4a00; line-height: 1.75; }
+    .disclaimer strong { font-weight: 600; }
+
+    /* FOOTER */
+    footer { background: var(--black); border-top: 1px solid rgba(255,255,255,.06); padding: 2.5rem 5vw; display: flex; justify-content: space-between; align-items: center; }
+    footer p { font-size: .75rem; color: rgba(255,255,255,.25); }
+
+    @media (max-width: 960px) {
+      .featured { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      footer { flex-direction: column; gap: .5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo-svg">
+    <span class="logo-bar"></span>
+    <span class="logo-text">AGOS<em>finance</em></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="analisi.html" class="active">Analisi</a></li>
+    <li><a href="portfolio.html">Portfolio</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <div class="breadcrumb"><a href="index.html">Home</a><span>/</span>Analisi</div>
+  <h1>Tutte le<br/><em>analisi</em></h1>
+  <p>Azioni, opzioni, macro. Ogni pezzo è il risultato di ricerca indipendente — tesi completa di rischi e incertezze.</p>
+</div>
+
+<div class="filters">
+  <span class="filter-label">Filtra per:</span>
+  <button class="f-btn active" data-filter="all">Tutti</button>
+  <button class="f-btn" data-filter="azioni">Azioni</button>
+  <button class="f-btn" data-filter="opzioni">Opzioni</button>
+  <button class="f-btn" data-filter="macro">Macro</button>
+</div>
+
+<div class="content">
+  <p class="results-info">Mostrando <strong id="count">4</strong> analisi</p>
+
+  <!-- ═══ FEATURED ═══ -->
+  <a href="analisi/aex_dashboard_23apr.html" class="featured" data-cat="opzioni">
+    <div class="featured-left">
+      <span class="feat-badge">⭐ In evidenza</span>
+      <div>
+        <div class="feat-ticker">Analisi AEX 23 aprile</div>
+        <div class="feat-cat">Opzioni su indice</div>
+      </div>
+    </div>
+    <div class="featured-right">
+      <h2>SEGNALE CRITICO — HV 8,20% vs IV 16,6% · Ratio 2,02× · AEX in ribasso −0,79%</h2>
+      <p>La HV è risalita leggermente da 6,94% a 8,20% — il mercato ha iniziato a muoversi (-8 punti oggi), ma la divergenza con la IV implicita rimane enorme a 2,02×. Le opzioni costano il doppio del movimento reale recente. Oggi AEX apre in rosso e testa il supporto chiave 1.010–1.015.</p>
+      <div class="feat-meta">
+        <span class="meta-pill">📅 23 Aprile 2026</span>
+        <span class="meta-pill">⏱ 10 min</span>
+        <span class="meta-pill">📊 Con dashboard</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- ═══ GRID ═══ -->
+  <!--
+    ╔══════════════════════════════════════════════════════════════╗
+    ║  COME AGGIUNGERE UNA NUOVA ANALISI                          ║
+    ║  1. Crea il file HTML nella cartella /analisi/              ║
+    ║  2. Copia uno dei blocchi .card qui sotto                   ║
+    ║  3. Aggiorna: href, data-cat, ticker, titolo, desc, data    ║
+    ║  4. Carica su GitHub → Cloudflare pubblica automaticamente  ║
+    ╚══════════════════════════════════════════════════════════════╝
+  -->
+  <div class="grid" id="analysesGrid">
+  
+    <a href="analisi/aex.html" class="card" data-cat="opzioni">
+      <div class="card-cat">Opzioni</div>
+      <div class="card-ticker">Analisi AEX 22 Aprile</div>
+      <p class="card-title">Bear Put Spread: gestione delle posizioni in bassa volatilità</p>
+      <div class="card-footer-row">
+        <span class="card-date">23 Mar 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+   
+   
+
+  
+</div>
+
+<div class="disclaimer">
+  <p>⚠️ <strong>Disclaimer legale:</strong> Le informazioni presenti su questo sito hanno esclusivamente scopo informativo ed educativo. Non costituiscono consulenza finanziaria, raccomandazione di investimento o sollecitazione all'acquisto/vendita di strumenti finanziari. Ogni decisione di investimento è responsabilità esclusiva del lettore.</p>
+</div>
+
+<footer>
+  <a href="index.html" class="logo-svg">
+    <span class="logo-bar" style="height:22px"></span>
+    <span class="logo-text" style="font-size:.95rem;">AGOS<em>finance</em></span>
+  </a>
+  <p>Le informazioni non costituiscono consulenza finanziaria.</p>
+</footer>
+
+<script>
+  const btns = document.querySelectorAll('.f-btn');
+  const cards = document.querySelectorAll('[data-cat]');
+  const countEl = document.getElementById('count');
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      let n = 0;
+      cards.forEach(c => {
+        const show = f === 'all' || c.dataset.cat === f;
+        c.classList.toggle('hidden', !show);
+        if (show) n++;
+      });
+      countEl.textContent = n;
+    });
+  });
+</script>
+</body>
+</html>
